@@ -12,6 +12,20 @@ parser.add_argument("-i", "--ip", help="Ip to start server on. Defaults to 'loca
 parser.add_argument("-p", "--port", type=int, help="Port to start server on. Defaults to '8080'")
 args = parser.parse_args()
 
+class MyProtocol:
+    
+    def validate(self, json_data):
+        valid_data = ["cat", "dog", "bear"]
+
+        if json_data["request"] in valid_data:
+            print "Valid request"
+            print "Sending response back"
+            return True
+        else:
+            print "Invalid request"
+            print "Sending response back"
+            return False
+
 class MyServer:
 
     def __init__(self):
@@ -39,6 +53,9 @@ class MyServer:
         #start listening for conections, only allow 1 connection
         sock.listen(1)
 
+        #Define protocol
+        protocol = MyProtocol()
+
         while True:
             print "\nWaiting for a connection"
             #accept connections. conn is socket object, addr is address of client
@@ -56,15 +73,12 @@ class MyServer:
                         json_data = json.loads(data)
                         if data:
                             #check for valid request
-                            if (json_data["request"] == "cat") or (json_data["request"] == "dog") or (json_data["request"] == "bear"):
-                                print "Valid request"
-                                print "Sending response back"
+                            if protocol.validate(json_data):
                                 #send back response as text
                                 conn.sendall("Yes, you sent %s" % json_data["request"])
+
                             #if request is invalid
                             else:
-                                print "Invalid request"
-                                print "Sending response back"
                                 #send back response as text
                                 conn.sendall("No, you sent %s" % json_data["request"])
                         else:
