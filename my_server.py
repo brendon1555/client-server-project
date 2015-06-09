@@ -5,7 +5,7 @@ import json
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 #define address for socket to be used on
-server_address = ('localhost', 8080)
+server_address = ("localhost", 8080)
 
 print "Starting on %s port %s" % server_address
 
@@ -26,7 +26,7 @@ while True:
 
         while True:
             data = conn.recv(1024)
-            print "Received '%s'" % data
+            print "Received '%s' "% data
             try:
                 json_data = json.loads(data)
                 if data:
@@ -43,16 +43,16 @@ while True:
                     break
             except ValueError, e:
                 print "Invalid Value"
-                conn.sendall("ValueError")
+                conn.sendall("Server: ValueError")
 
             except KeyError, e:
                 print "Invalid Key"
-                conn.sendall("KeyError")
+                conn.sendall("Server: KeyError")
 
             except TypeError, e:
                 print "Invalid Type"
-                conn.sendall("TypeError")
-                
+                conn.sendall("Server: TypeError")
+
     except socket.error:
         print "Socket Error"            
     finally:

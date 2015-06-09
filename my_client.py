@@ -9,7 +9,27 @@ print "Connecting to %s port %s" % server_address
 
 sock.connect(server_address)
 
+user_text = raw_input("Enter a request: ")
+
+user_json = input("Enter some json: ")
+
 try:
+
+    request = {"request": user_text}
+    print "Sending ", request
+    sock.sendall(json.dumps(request))
+    result = sock.recv(1024)
+
+    print result
+
+
+    request = user_json
+    print "Sending ", request
+    sock.sendall(json.dumps(request))
+    result = sock.recv(1024)
+
+    print result
+
 
     request = {"request":"cat"}
     print "Sending ", request
@@ -41,6 +61,7 @@ try:
     result = sock.recv(1024)
 
     print result
+
 
     request = "Not json"
     print "Sending ", request
