@@ -22,6 +22,9 @@ class MyServer:
 
 
     def bind(self):
+        global ip
+        global port
+        
         if args.ip:
             ip = args.ip
         if args.port:
@@ -40,7 +43,7 @@ class MyServer:
         #start listening for conections, only allow 1 connection
         sock.listen(1)
         while True:
-            print "Waiting for a connection"
+            print "\nWaiting for a connection"
             #accept connections. conn is socket object, addr is address of client
             conn, addr = sock.accept()
 
@@ -50,7 +53,7 @@ class MyServer:
                 while True:
                     #receive data
                     data = conn.recv(1024)
-                    print "Received '%s' "% data
+                    print "\nReceived '%s' "% data
                     try:
                         #read data from json
                         json_data = json.loads(data)

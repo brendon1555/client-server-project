@@ -1,72 +1,87 @@
 import socket
 import json
+import argparse
 
-#create a socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+ip = "localhost"
+port = 8080
 
-#define address of server
-server_address = ("localhost", 8080)
+sock = socket.socket()
 
-print "Connecting to %s port %s" % server_address
-#connect to server
-sock.connect(server_address)
-
-try:
-    #take string input from user
-    user_text = raw_input("Enter a request: ")
-
-    #define request and send to server as json
-    request = {"request": user_text}
-    print "Sending ", request
-    sock.sendall(json.dumps(request))
-    #get result back from server
-    result = sock.recv(1024)
-
-    print result
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--ip", help="Ip to locate server on.")
+parser.add_argument("-p", "--port", type=int, help="Port to locate server on.")
+args = parser.parse_args()
 
 
-    request = {"request":"cat"}
-    print "Sending ", request
-    sock.sendall(json.dumps(request))
-    result = sock.recv(1024)
+class MyClient:
 
-    print result
+    def __init__(self):
+        #create a socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def connect(self):
+        global ip
+        global port
+
+        if args.ip:
+            ip = args.ip
+        if args.port:
+            port = args.port
+        #define address of server
+        server_address = (ip, port)
+
+        print "Connecting to %s port %s" % server_address
+        #connect to server
+        sock.connect(server_address)
+
+    def send(self, request):
+        print "\nSending ", request
+        sock.sendall(json.dumps(request))
+        #get result back from server
+        result = sock.recv(1024)
+
+        print result
+
+    def run(self):
+        try:
+            #take string input from user
+            user_text = raw_input("Enter a request: ")
+
+            #define request and send to server as json
+            request = {"request": user_text}
+            self.send(request)
 
 
-    request = {"request":"dog"}
-    print "Sending ", request
-    sock.sendall(json.dumps(request))
-    result = sock.recv(1024)
-
-    print result
+            request = {"request":"cat"}
+            self.send(request)
 
 
-    request = {"request":"bear"}
-    print "Sending ", request
-    sock.sendall(json.dumps(request))
-    result = sock.recv(1024)
-
-    print result
+            request = {"request":"dog"}
+            self.send(request)
 
 
-    request = {"invalid":"cat"}
-    print "Sending ", request
-    sock.sendall(json.dumps(request))
-    result = sock.recv(1024)
-
-    print result
+            request = {"request":"bear"}
+            self.send(request)
 
 
-    request = "Not json"
-    print "Sending ", request
-    sock.sendall(json.dumps(request))
-    result = sock.recv(1024)
+            request = {"invalid":"cat"}
+            self.send(request)
 
-    print result
 
-except SyntaxError, e:
-    print "Client: Syntax Error"
+            request = "Not json"
+            self.send(request)
 
-finally:
-    #close socket
-    sock.close()
+        except SyntaxError, e:
+            print "Client: Syntax Error"
+
+        finally:
+            #close socket
+            sock.close()
+
+def main():
+    client = MyClient()
+    client.connect()
+    client.run()
+
+if __name__ == "__main__":
+    main()
