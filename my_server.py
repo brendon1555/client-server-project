@@ -52,5 +52,8 @@ while True:
             except TypeError, e:
                 print "Invalid Type"
                 conn.sendall("TypeError")
+                
+    except socket.error:
+        print "Socket Error"            
     finally:
         conn.close()
