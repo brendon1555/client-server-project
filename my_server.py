@@ -1,3 +1,4 @@
+import signal
 import socket
 import json
 import argparse
@@ -11,6 +12,16 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--ip", help="Ip to start server on. Defaults to 'localhost'")
 parser.add_argument("-p", "--port", type=int, help="Port to start server on. Defaults to '8080'")
 args = parser.parse_args()
+
+def signal_handler(signal, frame):
+        print 'Ended'
+        try:
+            sock.close()
+        #catch socket errors
+        except socket.error:
+            print "Socket Error"   
+
+signal.signal(signal.SIGINT, signal_handler)
 
 class MyProtocol:
 
@@ -112,8 +123,4 @@ def main():
     serv.run()
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print 'Ended'
-        sock.close()
+    main()
