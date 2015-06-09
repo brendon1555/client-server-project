@@ -38,19 +38,12 @@ class MyClient:
         print "\nSending ", request
         sock.sendall(json.dumps(request))
         #get result back from server
-        result = sock.recv(1024)
+        result = sock.recv(4096)
 
         print result
 
     def run(self):
         try:
-            #take string input from user
-            user_text = raw_input("Enter a request: ")
-
-            #define request and send to server as json
-            request = {"request": user_text}
-            self.send(request)
-
 
             request = {"request":"cat"}
             self.send(request)
@@ -70,6 +63,19 @@ class MyClient:
 
             request = "Not json"
             self.send(request)
+
+            while True:
+
+                #take string input from user
+                user_text = raw_input("Enter a request: ")
+                if user_text == "":
+                    break
+                else:
+                    #define request and send to server as json
+                    request = {"request": user_text}
+                    self.send(request)
+
+
 
         except SyntaxError, e:
             print "Client: Syntax Error"

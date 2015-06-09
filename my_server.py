@@ -24,7 +24,7 @@ class MyServer:
     def bind(self):
         global ip
         global port
-        
+
         if args.ip:
             ip = args.ip
         if args.port:
@@ -52,7 +52,7 @@ class MyServer:
 
                 while True:
                     #receive data
-                    data = conn.recv(1024)
+                    data = conn.recv(4096)
                     print "\nReceived '%s' "% data
                     try:
                         #read data from json
