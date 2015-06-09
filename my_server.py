@@ -1,4 +1,5 @@
 import socket
+import json
 
 #Create a socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,13 +25,32 @@ while True:
         print "Connection from ", addr
 
         while True:
-            data = conn.recv(16)
+            data = conn.recv(1024)
             print "Received '%s'" % data
-            if data:
-                print "Sending data back"
-                conn.sendall(data)
-            else:
-                print "No more data from ", addr
-                break
+            try:
+                json_data = json.loads(data)
+                if data:
+                    if (json_data["request"] == "cat") or (json_data["request"] == "dog") or (json_data["request"] == "bear"):
+                        print "Valid request"
+                        print "Sending response back"
+                        conn.sendall("Yes, you sent %s" % json_data["request"])
+                    else:
+                        print "Invalid request"
+                        print "Sending response back"
+                        conn.sendall("No, you sent %s" % json_data["request"])
+                else:
+                    print "No more data from ", addr
+                    break
+            except ValueError, e:
+                print "Invalid Value"
+                conn.sendall("ValueError")
+
+            except KeyError, e:
+                print "Invalid Key"
+                conn.sendall("KeyError")
+
+            except TypeError, e:
+                print "Invalid Type"
+                conn.sendall("TypeError")
     finally:
         conn.close()
