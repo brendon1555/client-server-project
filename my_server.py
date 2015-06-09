@@ -2,24 +2,21 @@ import socket
 import json
 import argparse
 
-
 ip = "localhost"
 port = 8080
 
 sock = socket.socket()
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--ip", help="Ip to start server on.")
-parser.add_argument("-p", "--port", type=int, help="Port to start server on.")
+parser.add_argument("-i", "--ip", help="Ip to start server on. Defaults to 'localhost'")
+parser.add_argument("-p", "--port", type=int, help="Port to start server on. Defaults to '8080'")
 args = parser.parse_args()
 
 class MyServer:
 
     def __init__(self):
-
         #Create a socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 
     def bind(self):
         global ip
@@ -38,10 +35,10 @@ class MyServer:
         #bind socket to address
         sock.bind(server_address)
 
-
     def run(self):
         #start listening for conections, only allow 1 connection
         sock.listen(1)
+
         while True:
             print "\nWaiting for a connection"
             #accept connections. conn is socket object, addr is address of client
@@ -86,9 +83,11 @@ class MyServer:
                         print "Invalid Type"
                         #send error type as text to client
                         conn.sendall("Server: TypeError")
+
             #catch socket errors
             except socket.error:
-                print "Socket Error"            
+                print "Socket Error"   
+
             finally:
                 #close socket
                 conn.close()
