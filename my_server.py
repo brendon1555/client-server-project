@@ -13,7 +13,7 @@ parser.add_argument("-p", "--port", type=int, help="Port to start server on. Def
 args = parser.parse_args()
 
 class MyProtocol:
-    
+
     def validate(self, json_data):
         valid_data = ["cat", "dog", "bear"]
 
@@ -112,4 +112,8 @@ def main():
     serv.run()
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print 'Ended'
+        sock.close()
