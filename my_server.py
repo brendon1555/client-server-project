@@ -15,11 +15,7 @@ args = parser.parse_args()
 
 def signal_handler(signal, frame):
         print 'Ended'
-        try:
-            sock.close()
-        #catch socket errors
-        except socket.error:
-            print "Socket Error"   
+        sock.close()
 
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -69,8 +65,11 @@ class MyServer:
 
         while True:
             print "\nWaiting for a connection"
-            #accept connections. conn is socket object, addr is address of client
-            conn, addr = sock.accept()
+            try:
+                #accept connections. conn is socket object, addr is address of client
+                conn, addr = sock.accept()
+            except socket.error:
+                break
 
             try:
                 print "Connection from ", addr
