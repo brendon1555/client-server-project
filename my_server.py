@@ -3,27 +3,15 @@ import socket
 import json
 import argparse
 
-ip = "localhost"
-port = 8080
-
-sock = socket.socket()
-
-parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--ip", help="Ip to start server on. Defaults to 'localhost'")
-parser.add_argument("-p", "--port", type=int, help="Port to start server on. Defaults to '8080'")
-args = parser.parse_args()
-
-def signal_handler(signal, frame):
-        print 'Ended'
-        sock.close()
-
-signal.signal(signal.SIGINT, signal_handler)
 
 class MyProtocol:
 
+    #define function to check for contents of json
     def validate(self, json_data):
+        #valid data for json to contain
         valid_data = ["cat", "dog", "bear"]
 
+        #check if json contains valid data
         if json_data["request"] in valid_data:
             print "Valid request"
             print "Sending response back"
@@ -35,32 +23,28 @@ class MyProtocol:
 
 class MyServer:
 
-    def __init__(self):
+
+    def __init__(self, sock):
         #Create a socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    def bind(self):
-        global ip
-        global port
 
-        if args.ip:
-            ip = args.ip
-        if args.port:
-            port = args.port
+    def bind(self, args, sock):
 
-        #define address for socket to be used on
-        server_address = (ip, port)
+        #define address for socket to be used on using arguments
+        server_address = (args.ip, args.port)
 
+        #print the address of the server
         print "Starting on %s port %s" % server_address
 
         #bind socket to address
         sock.bind(server_address)
 
-    def run(self):
+    def run(self, sock):
         #start listening for conections, only allow 1 connection
         sock.listen(1)
 
-        #Define protocol
+        #Define protocol for use
         protocol = MyProtocol()
 
         while True:
@@ -68,15 +52,18 @@ class MyServer:
             try:
                 #accept connections. conn is socket object, addr is address of client
                 conn, addr = sock.accept()
+            #if an error occurs, break out of the loop
             except socket.error:
                 break
 
             try:
+                #print the address of the connected client
                 print "Connection from ", addr
 
                 while True:
                     #receive data
                     data = conn.recv(4096)
+                    #print the raw data that was received
                     print "\nReceived '%s' "% data
                     try:
                         #read data from json
@@ -117,9 +104,28 @@ class MyServer:
                 conn.close()
 
 def main():
-    serv = MyServer()
-    serv.bind()
-    serv.run()
+
+    #initialise a socket
+    sock = socket.socket()
+
+    #define argument parser
+    parser = argparse.ArgumentParser()
+    #add arguments to parser
+    parser.add_argument("-i", "--ip", default="localhost", help="Ip to start server on. Defaults to 'localhost'")
+    parser.add_argument("-p", "--port", type=int, default=8080, help="Port to start server on. Defaults to '8080'")
+    args = parser.parse_args()
+
+    #run functions in order
+    serv = MyServer(sock)
+    serv.bind(args, sock)
+    serv.run(sock)
+
+    #handle a signal interupt
+    def signal_handler(signal, frame):
+        print 'Ended'
+        sock.close()
+
 
 if __name__ == "__main__":
     main()
+    signal.signal(signal.SIGINT, signal_handler)
