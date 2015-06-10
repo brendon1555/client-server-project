@@ -3,6 +3,15 @@ import socket
 import json
 import argparse
 
+#initialise a socket
+sock = socket.socket()
+
+#handle a signal interupt
+def signal_handler(signal, frame):
+    print 'Ended'
+    sock.close()
+
+    
 
 class MyProtocol:
 
@@ -105,9 +114,6 @@ class MyServer:
 
 def main():
 
-    #initialise a socket
-    sock = socket.socket()
-
     #define argument parser
     parser = argparse.ArgumentParser()
     #add arguments to parser
@@ -120,12 +126,9 @@ def main():
     serv.bind(args, sock)
     serv.run(sock)
 
-    #handle a signal interupt
-    def signal_handler(signal, frame):
-        print 'Ended'
-        sock.close()
-
+    
 
 if __name__ == "__main__":
-    main()
     signal.signal(signal.SIGINT, signal_handler)
+    main()
+    
